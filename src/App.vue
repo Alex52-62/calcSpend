@@ -4,11 +4,11 @@
       <h1>My personal cost</h1>
     </header>
     <main>
-      <PaymentsDisplay :list="paymentsList" />
+      <PaymentsDisplay :list="pageList" />
       <br />
       <AddPayment @addNewPayment="addData" />
       <br />
-      <Pagination :pd="paymentsList" />
+      <Pagination :pd="paymentsList" @sendPage="getPage($event)" />
     </main>
   </div>
 </template>
@@ -17,6 +17,7 @@
 import PaymentsDisplay from "./components/PaymentsDisplay.vue";
 import AddPayment from "./components/AddPayment.vue";
 import Pagination from "./components/pagination.vue";
+import list from "@/data";
 
 export default {
   name: "App",
@@ -27,54 +28,21 @@ export default {
   },
   data: () => ({
     paymentsList: [],
+    pageList: [],
     data: {
       form: "qw",
     },
   }),
   methods: {
-    addData(data) {
-      console.log("push to state", data);
-      // this.paymentsList.push(data)
-      this.paymentsList = [...this.paymentsList, data];
-      console.log(this.paymentsList);
+    getPage(page) {
+      this.pageList = page;
     },
-    fetchData() {
-      return [
-        {
-          date: "28.03.2020",
-          category: "Food",
-          value: 169,
-        },
-        {
-          date: "20.04.2021",
-          category: "Sport",
-          value: 400,
-        },
-        {
-          date: "28.05.2020",
-          category: "Internet",
-          value: 200,
-        },
-        {
-          date: "28.05.2020",
-          category: "Internet",
-          value: 210,
-        },
-        {
-          date: "28.05.2020",
-          category: "Internet",
-          value: 220,
-        },
-        {
-          date: "28.05.2020",
-          category: "Internet",
-          value: 250,
-        },
-      ];
+    addData(data) {
+      this.paymentsList = [...this.paymentsList, data];
     },
   },
   created() {
-    this.paymentsList = this.fetchData();
+    this.paymentsList = list();
   },
 };
 </script>
