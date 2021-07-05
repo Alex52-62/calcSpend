@@ -5,8 +5,8 @@
       <div class="btn-group">
         <button
           class="btn btn-primary"
-          v-for="p in pagination.pages"
-          @click.prevent="setPage(p)"
+          v-for="p in pages"
+          @click.prevent="getPage(p)"
           :key="p"
         >
           {{ p }}
@@ -17,8 +17,6 @@
 </template>
 
 <script>
-import _ from "lodash";
-
 export default {
   name: "Pagination",
   props: {
@@ -29,38 +27,35 @@ export default {
   },
   data: () => ({
     perPage: 5,
-    pagination: {},
+    currentIndex: 1,
   }),
   computed: {
-    collection() {
-      return this.paginate(this.pd);
+    pages() {
+      const pages = [];
+      this.pd.forEach((p, i) => {
+        if (!(i % this.perPage)) {
+          pages.push(1 + i / this.perPage);
+        }
+      });
+      return pages;
     },
   },
   methods: {
-    setPage(p) {
-      this.pagination = this.paginator(this.pd.length, p);
-    },
-    paginate(pd) {
-      return _.slice(
-        pd,
-        this.pagination.startIndex,
-        this.pagination.endIndex + 1
-      );
-    },
-    paginator(totalItems, currentPage) {
-      var startIndex = (currentPage - 1) * this.perPage,
-        endIndex = Math.min(startIndex + this.perPage - 1, totalItems - 1);
-
-      return {
-        currentPage: currentPage,
-        startIndex: startIndex,
-        endIndex: endIndex,
-        pages: _.range(1, Math.ceil(totalItems / this.perPage) + 1),
-      };
+    getPage(currentIndex) {
+      this.currentIndex = currentIndex;
+      const startIndex = (currentIndex - 1) * this.perPage;
+      const endIndex = startIndex + this.perPage;
+      const currentPage = this.pd.slice(startIndex, endIndex);
+      this.$emit("sendPage", currentPage);
     },
   },
-  created() {
-    this.setPage(1);
+  watch: {
+    pd() {
+      this.getPage(this.currentIndex);
+    },
+  },
+  mounted() {
+    this.getPage(this.currentIndex);
   },
 };
 </script>
